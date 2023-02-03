@@ -35,6 +35,16 @@ transport:
   service:
     enabled: true
 
+proxy:
+  proxyServices: []
+  #  - service: whoami.svc
+  #    bindPort: 80
+  #    servicePort: 80
+  #    serviceProtocol: TCP
+  service:
+    enabled: true
+    type: ClusterIP
+
 # is the edge enabled?
 edge:
   enabled: false

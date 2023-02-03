@@ -66,6 +66,15 @@ data:
             resolver: {{ .Values.tunnel.resolver }}
             lanIf: {{ .Values.tunnel.lanIf }}
     {{- end }}
+    {{- if gt (len .Values.proxy.proxyServices) 0 }}
+      - binding: tunnel
+        options:
+          mode: proxy
+          services:
+            {{- range .Values.proxy.proxyServices }}
+            - {{ .service }}:{{ .bindPort }}
+            {{- end }}
+    {{- end }}
     {{- end }}
 
 
