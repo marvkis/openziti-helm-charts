@@ -48,7 +48,7 @@ data:
             options:
               outQueueSize:   4
       {{- end }}
-    {{- if or (and .Values.tunnel.mode (ne .Values.tunnel.mode "disabled" )) (eq .Values.edge.enabled true) }}
+    {{- if or (gt (len .Values.tunnel) 0) .Values.edge.enabled }}
     listeners:
     # bindings of edge and tunnel requires an "edge" section below
     {{- if (eq .Values.edge.enabled true) }}
@@ -59,25 +59,31 @@ data:
             connectTimeoutMs: 1000
             getSessionTimeout: 60
     {{- end }}
-    {{- if and .Values.tunnel.mode (ne .Values.tunnel.mode "disabled" ) }}
+    {{- range .Values.tunnel }}
+      {{- if eq .mode "host" }}
       - binding: tunnel
         options:
-            mode: {{ .Values.tunnel.mode }}
-            resolver: {{ .Values.tunnel.resolver }}
-            lanIf: {{ .Values.tunnel.lanIf }}
-    {{- end }}
-    {{- if gt (len .Values.proxy.proxyServices) 0 }}
+            mode: host
+      {{ else if eq .mode "tproxy" }}
       - binding: tunnel
         options:
-          mode: proxy
-          services:
-            {{- range .Values.proxy.proxyServices }}
-            - {{ .service }}:{{ .bindPort }}
+            mode: tproxy
+            {{- range $k, $v := . }}
+            {{- if ne $k "mode" }}
+            {{ $k }}: {{ $v }}
             {{- end }}
+            {{- end }}
+      {{- else if eq .mode "proxy" }}
+      - binding: tunnel
+        options:
+            mode: proxy
+            services:
+                {{- range .proxyServices }}
+                - {{ .zitiService }}:{{ .zitiPort }}
+                {{- end }}
+      {{- end }}
     {{- end }}
     {{- end }}
-
-
     edge:
         csr:
           {{- if .Values.csr.country }}

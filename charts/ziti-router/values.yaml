@@ -56,10 +56,29 @@ edge:
     type: ClusterIP
     labels: {}
     annotations: {}
-tunnel:
-  mode: disabled # disabled | none | tproxy | host
-  resolver: udp://192.168.10.11:53
-  lanIf: eth0
+
+tunnel: {}
+  #- mode: host
+  #- mode: tproxy
+  #  resolver: udp://192.168.10.11:53
+  #  lanIf: eth0
+  #- mode: proxy
+  #  service:
+  #    enabled: true
+  #    type: LoadBalancer
+  #  additionalServices:
+  #    - name: nonpublic
+  #      type: ClusterIP
+  #  proxyServices:
+  #    - zitiService: whoami.svc
+  #      zitiPort: 80
+  #      servicePort: 80
+  #      serviceProtocol: TCP
+  #    - zitiService: other.svc
+  #      zitiPort: 81
+  #      servicePort: 8001
+  #      serviceProtocol: TCP
+  #      serviceName: nonpublic
 
 image:
   repository: openziti/quickstart
